@@ -1,7 +1,7 @@
 # p7_scoring
 Project P7 - Implementez un modele de scoring (voir aussi https://openclassrooms.com/fr/paths/164/projects/632/assignment)
 
-1. Objectif du projet: (voir aussi https://openclassrooms.com/fr/paths/164/projects/632/assignment)
+1. Objectif du projet:
 
 L’entreprise souhaite:
 - mettre en œuvre un outil de “scoring crédit” pour calculer la probabilité qu’un client rembourse son crédit, puis classifie la demande en crédit accordé ou refusé.
