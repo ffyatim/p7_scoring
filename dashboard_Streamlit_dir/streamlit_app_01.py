@@ -2,7 +2,8 @@ import streamlit as st
 from pyngrok import ngrok
 import json
 from urllib.request import urlopen
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
+from sklearn.neighbors import NearestNeighbors
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -253,13 +254,32 @@ def main() :
     chk_voisins = st.checkbox("Affichier les dossiers de clients similaires ?")
 # 
 # #######################################################################
+# DEBUT Modif 29/12/2021
+# #######################################################################
     if chk_voisins:
-        knn = load_knn(sample)
+#         knn = load_knn(sample)
         st.markdown("<u>Liste des 10 dossiers proches :</u>", unsafe_allow_html=True)
-#        st.dataframe(load_kmeans(sample, chk_id, knn))
-        shows = load_kmeans(sample, chk_id, knn)
+
+        # Extraire l'observation du client choisi 
+        X = sample.iloc[:, :-1]
+        x_new = X[X.index == chk_id]
+#        x_new = pd.DataFrame(sample.iloc[chk_id:chk_id+1,])
+        # Definir un ficbhier ne contenant pas le client choisi
+        samples = X.drop(chk_id)
+        # Definir le modele de Nearest observations, avec une observation la + proche
+        neigh_model = NearestNeighbors(n_neighbors=1)
+        # Fiter le modele
+        neigh_model.fit(samples)
+        # Extraire les 10 observations les + proches 
+        neigh_indices = neigh_model.kneighbors(x_new, 10, return_distance=False)
+        # Afficher les observations 
+        index_list = neigh_indices[0]
+        shows = data.loc[data.index[index_list]]
+        drop_cols = [0,2]
+        shows = shows.drop(shows.columns[drop_cols], axis=1)
+
 #        AgGrid(shows, height=500, fit_columns_on_grid_load=True)
- 
+  
         gb = GridOptionsBuilder.from_dataframe(shows)
 #        gb.configure_grid_options(domLayout='autoHeight')
         gb.configure_pagination()
@@ -270,6 +290,9 @@ def main() :
     else:
         st.markdown("<i>…</i>", unsafe_allow_html=True)
 # #######################################################################
+# FIN Modif 29/12/2021
+# #######################################################################
+# 
 # For debugging only .....
 # 
 #     st.markdown("<i>FOR DEBUGGING ONLY .....</i>", unsafe_allow_html=True)
